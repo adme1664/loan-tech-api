@@ -12,6 +12,8 @@ import com.adme.learning.loan.tech.api.agreement.entity.Party;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +24,8 @@ import org.springframework.web.server.ResponseStatusException;
  */
 @Service
 public class AgreementBundleProcessor {
+
+    private static final Logger logger = LoggerFactory.getLogger(AgreementBundleProcessor.class);
 
     private final AgreementRepository agreementRepository;
     private final AgreementMapper agreementMapper;
@@ -172,5 +176,38 @@ public class AgreementBundleProcessor {
                 agreement.addInterestRate(newRate);
             }
         }
+    }
+
+    /**
+     * Soft deletes an Agreement by setting its deletedIndicator to true.
+     *
+     * @param dto the AgreementBundleDTO containing the agreement number
+     * @return true if agreement was newly purged, false if already purged
+     * @throws ResponseStatusException with HTTP 404 if agreement not found
+     */
+    @Transactional
+    public boolean purgeAgreement(AgreementBundleDTO dto) {
+        Optional<Agreement> existingAgreementOpt = agreementRepository.findByAgreementNo(
+                dto.getAgreement().getAgreementNo()
+        );
+
+        if (existingAgreementOpt.isEmpty()) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "Agreement not found with agreementNo: " + dto.getAgreement().getAgreementNo()
+            );
+        }
+
+        Agreement agreement = existingAgreementOpt.get();
+
+        if (Boolean.TRUE.equals(agreement.getDeletedIndicator())) {
+            logger.warn("Agreement {} is already purged", agreement.getAgreementNo());
+            return false;
+        }
+
+        agreement.setDeletedIndicator(true);
+        agreement.setSystemUpdateProcess("AgreementBundleService.purgeAgreement");
+        agreementRepository.save(agreement);
+        return true;
     }
 }

@@ -8,8 +8,6 @@
 -- ---------------------------------------------------------------------
 -- Fonction commune : met a jour sys_upd_ts a chaque UPDATE
 -- (indispensable pour le JDBC Source Connector en mode "timestamp")
--- ---------------------------------------------------------------------
-
 
 -- ---------------------------------------------------------------------
 -- tbl_agreement : informations de base de l'agreement

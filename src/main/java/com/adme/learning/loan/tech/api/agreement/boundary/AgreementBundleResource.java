@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -59,6 +60,30 @@ public class AgreementBundleResource implements MessageResource {
             if (ex.getStatusCode().value() == HttpStatus.UNPROCESSABLE_CONTENT.value()) {
                 throw new ResourceNotFoundException(ex.getReason());
             }
+            throw ex;
+        }
+    }
+
+    /**
+     * Soft deletes an agreement bundle by setting its deletedIndicator to true.
+     *
+     * @param dto the agreement bundle data
+     * @return ResponseEntity with HTTP 200 OK if newly purged, HTTP 204 No Content if already purged
+     * @throws ResponseStatusException with HTTP 404 if agreement not found
+     */
+    @DeleteMapping("/bundle")
+    public ResponseEntity<Void> purgeAgreementBundle( @RequestBody AgreementBundleDTO dto) {
+        try {
+            boolean wasPurged = agreementBundleProcessor.purgeAgreement(dto);
+            if (wasPurged) {
+                log.info(AGREEMENT_PURGED, dto.getAgreement().getAgreementNo());
+                return ResponseEntity.ok().build();
+            } else {
+                log.warn(AGREEMENT_ALREADY_PURGED, dto.getAgreement().getAgreementNo());
+                return ResponseEntity.noContent().build();
+            }
+        } catch (ResponseStatusException ex) {
+            log.error(AGREEMENT_NOT_FOUND, dto.getAgreement().getAgreementNo());
             throw ex;
         }
     }
