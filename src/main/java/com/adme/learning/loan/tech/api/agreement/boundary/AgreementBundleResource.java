@@ -1,6 +1,7 @@
 package com.adme.learning.loan.tech.api.agreement.boundary;
 
 import com.adme.learning.loan.tech.api.agreement.control.AgreementBundleProcessor;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -22,69 +23,73 @@ import org.springframework.web.server.ResponseStatusException;
 @Slf4j
 public class AgreementBundleResource implements MessageResource {
 
-    private final AgreementBundleProcessor agreementBundleProcessor;
+  private final AgreementBundleProcessor agreementBundleProcessor;
 
-    /**
-     * Creates a new agreement bundle with related entities.
-     *
-     * @param dto the agreement bundle data
-     * @return ResponseEntity with HTTP 201 Created status
-     */
-    @PostMapping("/bundle")
-    public ResponseEntity<Void> createAgreementBundle( @RequestBody AgreementBundleDTO dto) {
-        try {
-            agreementBundleProcessor.prepareForCreate(dto);
-            log.info(AGREEMENT_CREATED, dto.getAgreement().getAgreementNo());
-            return ResponseEntity.status(HttpStatus.CREATED).build();
-        } catch (ResponseStatusException ex) {
-            log.error(AGREEMENT_NOT_CREATED, dto.getAgreement().getAgreementNo(), ex.getMessage());
-            throw ex;
-        }
-    }
+  /**
+   * Creates a new agreement bundle with related entities.
+   *
+   * @param dto the agreement bund  le data
+   * @return ResponseEntity with HTTP 201 Created status
+   */
+  @PostMapping(path = "bundle", consumes = "application/json", produces = "application/json")
+  public ResponseEntity<Void> createAgreementBundle(@RequestBody AgreementBundleDTO dto) {
+    try {
+      if (Objects.isNull(dto.getAgreement())) {
 
-    /**
-     * Updates an existing agreement bundle with related entities.
-     *
-     * @param dto the agreement bundle data
-     * @return ResponseEntity with HTTP 200 OK status
-     * @throws ResponseStatusException with HTTP 404 if agreement not found
-     */
-    @PutMapping("/bundle")
-    public ResponseEntity<Void> updateAgreementBundle( @RequestBody AgreementBundleDTO dto) {
-        try {
-            agreementBundleProcessor.prepareForUpdate(dto);
-            log.info(AGREEMENT_UPDATED, dto.getAgreement().getAgreementNo());
-            return ResponseEntity.ok().build();
-        } catch (ResponseStatusException ex) {
-            log.error(AGREEMENT_NOT_UPDATED, dto.getAgreement().getAgreementNo(), ex.getMessage());
-            if (ex.getStatusCode().value() == HttpStatus.UNPROCESSABLE_CONTENT.value()) {
-                throw new ResourceNotFoundException(ex.getReason());
-            }
-            throw ex;
-        }
+        return ResponseEntity.ok().build();
+      }
+      agreementBundleProcessor.prepareForCreate(dto);
+      log.info(AGREEMENT_CREATED, dto.getAgreement().getAgreementNo());
+      return ResponseEntity.status(HttpStatus.CREATED).build();
+    } catch (Exception ex) {
+      log.error(AGREEMENT_NOT_CREATED, dto.getAgreement().getAgreementNo(), ex.getMessage());
+      throw ex;
     }
+  }
 
-    /**
-     * Soft deletes an agreement bundle by setting its deletedIndicator to true.
-     *
-     * @param dto the agreement bundle data
-     * @return ResponseEntity with HTTP 200 OK if newly purged, HTTP 204 No Content if already purged
-     * @throws ResponseStatusException with HTTP 404 if agreement not found
-     */
-    @DeleteMapping("/bundle")
-    public ResponseEntity<Void> purgeAgreementBundle( @RequestBody AgreementBundleDTO dto) {
-        try {
-            boolean wasPurged = agreementBundleProcessor.purgeAgreement(dto);
-            if (wasPurged) {
-                log.info(AGREEMENT_PURGED, dto.getAgreement().getAgreementNo());
-                return ResponseEntity.ok().build();
-            } else {
-                log.warn(AGREEMENT_ALREADY_PURGED, dto.getAgreement().getAgreementNo());
-                return ResponseEntity.noContent().build();
-            }
-        } catch (ResponseStatusException ex) {
-            log.error(AGREEMENT_NOT_FOUND, dto.getAgreement().getAgreementNo());
-            throw ex;
-        }
+  /**
+   * Updates an existing agreement bundle with related entities.
+   *
+   * @param dto the agreement bundle data
+   * @return ResponseEntity with HTTP 200 OK status
+   * @throws ResponseStatusException with HTTP 404 if agreement not found
+   */
+  @PutMapping(path = "bundle", consumes = "application/json", produces = "application/json")
+  public ResponseEntity<Void> updateAgreementBundle(@RequestBody AgreementBundleDTO dto) {
+    try {
+      agreementBundleProcessor.prepareForUpdate(dto);
+      log.info(AGREEMENT_UPDATED, dto.getAgreement().getAgreementNo());
+      return ResponseEntity.ok().build();
+    } catch (ResponseStatusException ex) {
+      log.error(AGREEMENT_NOT_UPDATED, dto.getAgreement().getAgreementNo(), ex.getMessage());
+      if (ex.getStatusCode().value() == HttpStatus.UNPROCESSABLE_CONTENT.value()) {
+        throw new ResourceNotFoundException(ex.getReason());
+      }
+      throw ex;
     }
+  }
+
+  /**
+   * Soft deletes an agreement bundle by setting its deletedIndicator to true.
+   *
+   * @param dto the agreement bundle data
+   * @return ResponseEntity with HTTP 200 OK if newly purged, HTTP 204 No Content if already purged
+   * @throws ResponseStatusException with HTTP 404 if agreement not found
+   */
+  @DeleteMapping(path = "/bundle", consumes = "application/json", produces = "application/json")
+  public ResponseEntity<Void> purgeAgreementBundle(@RequestBody AgreementBundleDTO dto) {
+    try {
+      boolean wasPurged = agreementBundleProcessor.purgeAgreement(dto);
+      if (wasPurged) {
+        log.info(AGREEMENT_PURGED, dto.getAgreement().getAgreementNo());
+        return ResponseEntity.ok().build();
+      } else {
+        log.warn(AGREEMENT_ALREADY_PURGED, dto.getAgreement().getAgreementNo());
+        return ResponseEntity.noContent().build();
+      }
+    } catch (ResponseStatusException ex) {
+      log.error(AGREEMENT_NOT_FOUND, dto.getAgreement().getAgreementNo());
+      throw ex;
+    }
+  }
 }

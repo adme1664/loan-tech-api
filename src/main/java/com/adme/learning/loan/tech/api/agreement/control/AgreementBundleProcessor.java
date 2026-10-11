@@ -132,7 +132,7 @@ public class AgreementBundleProcessor {
                     .findByAgreementAgreementIdAndBalanceTypeAndBalanceDate(
                             agreement.getAgreementId(),
                             balanceDto.getBalanceType(),
-                            balanceDto.getBalanceDate()
+                            CommonUtils.convertStringToInstant(balanceDto.getBalanceDate())
                     );
 
             if (existingBalanceOpt.isPresent()) {

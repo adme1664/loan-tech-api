@@ -1,5 +1,6 @@
 package com.adme.learning.loan.tech.api.agreement.entity;
 
+import java.time.Instant;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -20,21 +21,21 @@ public interface BalanceRepository extends JpaRepository<Balance, UUID> {
 
     List<Balance> findByAgreementAgreementId(UUID agreementId);
 
-    List<Balance> findByBalanceType(BalanceType balanceType);
+    List<Balance> findByBalanceType(String balanceType);
 
-    List<Balance> findByBalanceDate(LocalDate balanceDate);
+    List<Balance> findByBalanceDate(Instant balanceDate);
 
     Optional<Balance> findByAgreementAgreementIdAndBalanceTypeAndBalanceDate(
             UUID agreementId,
-            BalanceType balanceType,
-            LocalDate balanceDate
+            String balanceType,
+            Instant balanceDate
     );
 
     @Query("SELECT b FROM Balance b WHERE b.agreement.agreementId = :agreementId " +
            "AND b.balanceType = :balanceType ORDER BY b.balanceDate DESC")
     List<Balance> findByAgreementAndTypeOrderByDateDesc(
             @Param("agreementId") UUID agreementId,
-            @Param("balanceType") BalanceType balanceType
+            @Param("balanceType") String balanceType
     );
 
     @Query("SELECT b FROM Balance b WHERE b.agreement.agreementId = :agreementId " +
@@ -47,6 +48,6 @@ public interface BalanceRepository extends JpaRepository<Balance, UUID> {
 
     Optional<Balance> findFirstByAgreementAgreementIdAndBalanceTypeOrderByBalanceDateDesc(
             UUID agreementId,
-            BalanceType balanceType
+            String balanceType
     );
 }

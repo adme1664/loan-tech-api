@@ -1,6 +1,7 @@
 package com.adme.learning.loan.tech.api.agreement.entity;
 
 import jakarta.persistence.*;
+import java.time.Instant;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -38,10 +39,10 @@ public class Party {
     private String memberIdNo;
 
     @Column(name = "sys_ins_ts", nullable = false, updatable = false)
-    private ZonedDateTime systemInsertTimestamp;
+    private Instant systemInsertTimestamp;
 
     @Column(name = "sys_upd_ts")
-    private ZonedDateTime systemUpdateTimestamp;
+    private Instant systemUpdateTimestamp;
 
     @Column(name = "sys_ins_process", nullable = false, length = 100)
     private String systemInsertProcess;
@@ -51,12 +52,12 @@ public class Party {
 
     @PrePersist
     protected void onCreate() {
-        systemInsertTimestamp = ZonedDateTime.now();
+        systemInsertTimestamp = Instant.now();
     }
 
     @PreUpdate
     protected void onUpdate() {
-        systemUpdateTimestamp = ZonedDateTime.now();
+        systemUpdateTimestamp = Instant.now();
     }
 
     public boolean hasUnbankId() {

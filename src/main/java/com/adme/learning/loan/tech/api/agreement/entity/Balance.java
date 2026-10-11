@@ -1,23 +1,30 @@
 package com.adme.learning.loan.tech.api.agreement.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
+import jakarta.persistence.Table;
+import java.math.BigDecimal;
+import java.time.Instant;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.ZonedDateTime;
-import java.util.UUID;
 
 /**
  * Represents balance and accrued interest information for an agreement.
  * Maps to tbl_balance in the commercialloan schema.
  */
 @Entity
-@Table(name = "tbl_balance", schema = "commercialloan",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"agreement_id", "balance_type", "balance_date"}))
+@Table(name = "tbl_balance", schema = "commercialloan")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -33,9 +40,8 @@ public class Balance {
     @JoinColumn(name = "agreement_id", nullable = false)
     private Agreement agreement;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "balance_type", nullable = false, length = 30)
-    private BalanceType balanceType;
+    private String balanceType;
 
     @Column(name = "credit_amnt", nullable = false, precision = 18, scale = 2)
     @Builder.Default
@@ -46,13 +52,13 @@ public class Balance {
     private BigDecimal debitAmount = BigDecimal.ZERO;
 
     @Column(name = "balance_date", nullable = false)
-    private LocalDate balanceDate;
+    private Instant balanceDate;
 
     @Column(name = "sys_ins_ts", nullable = false, updatable = false)
-    private ZonedDateTime systemInsertTimestamp;
+    private Instant systemInsertTimestamp;
 
     @Column(name = "sys_upd_ts")
-    private ZonedDateTime systemUpdateTimestamp;
+    private Instant systemUpdateTimestamp;
 
     @Column(name = "sys_ins_process", nullable = false, length = 100)
     private String systemInsertProcess;
@@ -62,13 +68,13 @@ public class Balance {
 
     @PrePersist
     protected void onCreate() {
-        systemInsertTimestamp = ZonedDateTime.now();
+        systemInsertTimestamp = Instant.now();
         validateAmounts();
     }
 
     @PreUpdate
     protected void onUpdate() {
-        systemUpdateTimestamp = ZonedDateTime.now();
+        systemUpdateTimestamp = Instant.now();
         validateAmounts();
     }
 

@@ -11,6 +11,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class AgreementBundleDTO {
+  private String agreementNo;
+  private String operation;
   private AgreementDTO agreement;
   private List<InterestRateDTO> interestRates;
   private List<BalanceDTO> balances;

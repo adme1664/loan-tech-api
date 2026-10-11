@@ -1,13 +1,12 @@
 package com.adme.learning.loan.tech.api.agreement.boundary;
 
-import com.adme.learning.loan.tech.api.agreement.entity.BalanceType;
+import java.time.Instant;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.UUID;
 
 /**
@@ -21,9 +20,9 @@ public class BalanceDTO {
 
     private UUID balanceId;
     private UUID agreementId;
-    private BalanceType balanceType;
+    private String balanceType;
     private BigDecimal creditAmount;
     private BigDecimal debitAmount;
     private BigDecimal netBalance;
-    private LocalDate balanceDate;
+    private String balanceDate;
 }

@@ -1,23 +1,31 @@
 package com.adme.learning.loan.tech.api.agreement.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
+import java.math.BigDecimal;
+import java.time.Instant;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.ZonedDateTime;
-import java.util.UUID;
 
 /**
  * Represents interest rate information for an agreement.
  * Maps to tbl_interest_rate in the commercialloan schema.
  */
 @Entity
-@Table(name = "tbl_interest_rate", schema = "commercialloan",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"agreement_id", "effective_dt"}))
+@Table(name = "tbl_interest_rate", schema = "commercialloan")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -33,9 +41,8 @@ public class InterestRate {
     @JoinColumn(name = "agreement_id", nullable = false)
     private Agreement agreement;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "interest_rate_type", nullable = false, length = 10)
-    private InterestRateType interestRateType;
+    private String interestRateType;
 
     @Column(name = "interest_rate", nullable = false, precision = 9, scale = 6)
     private BigDecimal interestRate;
@@ -47,13 +54,13 @@ public class InterestRate {
     private BigDecimal spreadRate;
 
     @Column(name = "effective_dt", nullable = false)
-    private LocalDate effectiveDate;
+    private Instant effectiveDate;
 
     @Column(name = "sys_ins_ts", nullable = false, updatable = false)
-    private ZonedDateTime systemInsertTimestamp;
+    private Instant systemInsertTimestamp;
 
     @Column(name = "sys_upd_ts")
-    private ZonedDateTime systemUpdateTimestamp;
+    private Instant systemUpdateTimestamp;
 
     @Column(name = "sys_ins_process", nullable = false, length = 100)
     private String systemInsertProcess;
@@ -63,36 +70,12 @@ public class InterestRate {
 
     @PrePersist
     protected void onCreate() {
-        systemInsertTimestamp = ZonedDateTime.now();
-        validateRateType();
+        systemInsertTimestamp = Instant.now();
     }
 
     @PreUpdate
     protected void onUpdate() {
-        systemUpdateTimestamp = ZonedDateTime.now();
-        validateRateType();
+        systemUpdateTimestamp = Instant.now();
     }
 
-    private void validateRateType() {
-        if (interestRateType == InterestRateType.VARIABLE) {
-            if (baseRate == null || spreadRate == null) {
-                throw new IllegalStateException("Variable interest rate must have both base rate and spread rate");
-            }
-        }
-    }
-
-    public boolean isFixed() {
-        return InterestRateType.FIXED.equals(interestRateType);
-    }
-
-    public boolean isVariable() {
-        return InterestRateType.VARIABLE.equals(interestRateType);
-    }
-
-    public BigDecimal calculateEffectiveRate() {
-        if (isFixed()) {
-            return interestRate;
-        }
-        return baseRate.add(spreadRate);
-    }
 }

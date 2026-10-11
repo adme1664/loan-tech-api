@@ -20,9 +20,9 @@ public interface AgreementRepository extends JpaRepository<Agreement, UUID> {
 
     List<Agreement> findByCreditFacilityNo(String creditFacilityNo);
 
-    List<Agreement> findByStatusCode(AgreementStatus statusCode);
+    List<Agreement> findByStatusCode(String statusCode);
 
-    List<Agreement> findByStatusCodeAndDeletedIndicator(AgreementStatus statusCode, Boolean deletedIndicator);
+    List<Agreement> findByStatusCodeAndDeletedIndicator(String statusCode, Boolean deletedIndicator);
 
     @Query("SELECT a FROM Agreement a WHERE a.deletedIndicator = false")
     List<Agreement> findAllActive();
@@ -35,7 +35,7 @@ public interface AgreementRepository extends JpaRepository<Agreement, UUID> {
 
     @Query("SELECT a FROM Agreement a WHERE a.statusCode = :status AND a.expiryDate BETWEEN :startDate AND :endDate")
     List<Agreement> findByStatusAndExpiryDateBetween(
-            @Param("status") AgreementStatus status,
+            @Param("status") String status,
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate
     );

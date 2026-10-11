@@ -31,6 +31,8 @@
     <java.version>25</java.version>
     <mapstruct.version>1.6.3</mapstruct.version>
     <lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
+    <openapi-generator-maven-plugin.version>7.10.0</openapi-generator-maven-plugin.version>
+    <springdoc-openapi-maven-plugin.version>1.4</springdoc-openapi-maven-plugin.version>
   </properties>
   <dependencies>
     <dependency>
@@ -65,6 +67,16 @@
       <version>${mapstruct.version}</version>
     </dependency>
     <dependency>
+      <groupId>com.fasterxml.jackson.datatype</groupId>
+      <artifactId>jackson-datatype-jsr310</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springdoc</groupId>
+      <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+      <version>2.7.0</version>
+    </dependency>
+    <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-data-jpa-test</artifactId>
       <scope>test</scope>
@@ -72,6 +84,11 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-webmvc-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -153,6 +170,51 @@
                   <version>${lombok-mapstruct-binding.version}</version>
                 </path>
               </annotationProcessorPaths>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.springdoc</groupId>
+        <artifactId>springdoc-openapi-maven-plugin</artifactId>
+        <version>${springdoc-openapi-maven-plugin.version}</version>
+        <executions>
+          <execution>
+            <id>integration-test</id>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <apiDocsUrl>http://localhost:9091/api-docs</apiDocsUrl>
+          <outputFileName>openapi.yaml</outputFileName>
+          <outputDir>${project.build.directory}/openapi</outputDir>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.openapitools</groupId>
+        <artifactId>openapi-generator-maven-plugin</artifactId>
+        <version>${openapi-generator-maven-plugin.version}</version>
+        <executions>
+          <execution>
+            <id>generate-java-client</id>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <inputSpec>${project.build.directory}/openapi/openapi.yaml</inputSpec>
+              <generatorName>java</generatorName>
+              <output>${project.build.directory}/generated-sources/openapi-client</output>
+              <apiPackage>com.adme.learning.loan.tech.api.client.api</apiPackage>
+              <modelPackage>com.adme.learning.loan.tech.api.client.model</modelPackage>
+              <invokerPackage>com.adme.learning.loan.tech.api.client.invoker</invokerPackage>
+              <configOptions>
+                <library>resttemplate</library>
+                <dateLibrary>java8</dateLibrary>
+                <useJakartaEe>true</useJakartaEe>
+              </configOptions>
+              <skip>true</skip>
             </configuration>
           </execution>
         </executions>

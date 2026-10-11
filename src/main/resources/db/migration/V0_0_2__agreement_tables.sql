@@ -12,6 +12,9 @@
 -- ---------------------------------------------------------------------
 -- tbl_agreement : informations de base de l'agreement
 -- ---------------------------------------------------------------------
+
+create schema if not exists commercialloan;
+
 CREATE TABLE tbl_agreement
 (
     agreement_id            UUID           NOT NULL,
@@ -35,10 +38,7 @@ CREATE TABLE tbl_agreement
     sys_ins_process         VARCHAR(100)   NOT NULL,
     sys_upd_process         VARCHAR(100)   NULL,
     CONSTRAINT pk_agreement PRIMARY KEY (agreement_id),
-    CONSTRAINT uk_agreement_agmt_id UNIQUE (agreement_no),
-    CONSTRAINT ck_agreement_status CHECK (status_cd IN ('EN_ATTENTE', 'OUVERT', 'SUSPENDU', 'FERME')),
-    CONSTRAINT ck_agreement_amt CHECK (original_amt >= 0),
-    CONSTRAINT ck_agreement_dates CHECK (effctv_dt <= expiry_dt AND expiry_dt <= maturity_dt)
+    CONSTRAINT uk_agreement_agmt_id UNIQUE (agreement_no)
 );
 
 CREATE INDEX ix_agreement_facility ON tbl_agreement (credit_facility_no);
@@ -64,12 +64,7 @@ CREATE TABLE tbl_interest_rate
     sys_upd_process    VARCHAR(100)  NULL,
     CONSTRAINT pk_interest_rate PRIMARY KEY (interest_rate_id),
     CONSTRAINT fk_interest_rate_agreement FOREIGN KEY (agreement_id) REFERENCES tbl_agreement (agreement_id),
-    CONSTRAINT uk_interest_rate UNIQUE (agreement_id, effective_dt),
-    CONSTRAINT ck_interest_rate_type CHECK (interest_rate_type IN ('FIXED', 'VARIABLE')),
-    CONSTRAINT ck_interest_rate_variable CHECK (
-        interest_rate_type = 'FIXED'
-            OR (base_rate IS NOT NULL AND spread_rate IS NOT NULL)
-        )
+    CONSTRAINT uk_interest_rate UNIQUE (agreement_id, interest_rate_type)
 );
 
 CREATE INDEX ix_interest_rate_sys_upd_ts ON tbl_interest_rate (sys_upd_ts);
@@ -95,8 +90,7 @@ CREATE TABLE tbl_balance
     sys_upd_process VARCHAR(100)   NULL,
     CONSTRAINT pk_balance PRIMARY KEY (balance_id),
     CONSTRAINT fk_balance_agreement FOREIGN KEY (agreement_id) REFERENCES tbl_agreement (agreement_id),
-    CONSTRAINT uk_balance UNIQUE (agreement_id, balance_type, balance_date),
-    CONSTRAINT ck_balance_amounts CHECK (credit_amnt >= 0 AND debit_amnt >= 0)
+    CONSTRAINT uk_balance UNIQUE (agreement_id, balance_type, balance_date)
 );
 
 CREATE INDEX ix_balance_sys_upd_ts ON tbl_balance (sys_upd_ts);

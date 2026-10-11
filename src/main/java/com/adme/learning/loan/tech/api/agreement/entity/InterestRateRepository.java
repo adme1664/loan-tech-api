@@ -20,7 +20,7 @@ public interface InterestRateRepository extends JpaRepository<InterestRate, UUID
 
     List<InterestRate> findByAgreementAgreementId(UUID agreementId);
 
-    List<InterestRate> findByInterestRateType(InterestRateType type);
+    List<InterestRate> findByInterestRateType(String type);
 
     @Query("SELECT ir FROM InterestRate ir WHERE ir.agreement.agreementId = :agreementId " +
            "AND ir.effectiveDate <= :date ORDER BY ir.effectiveDate DESC")

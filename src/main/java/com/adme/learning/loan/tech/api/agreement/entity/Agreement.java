@@ -1,6 +1,7 @@
 package com.adme.learning.loan.tech.api.agreement.entity;
 
 import jakarta.persistence.*;
+import java.time.Instant;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -45,9 +46,8 @@ public class Agreement {
     @Column(name = "status_cd_src", nullable = false, length = 20)
     private String statusCodeSource;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "status_cd", nullable = false, length = 20)
-    private AgreementStatus statusCode;
+    private String statusCode;
 
     @Column(name = "unbnk_letter_issuer_ind", nullable = false)
     private Boolean unbankLetterIssuerIndicator;
@@ -56,13 +56,13 @@ public class Agreement {
     private BigDecimal originalAmount;
 
     @Column(name = "effctv_dt", nullable = false)
-    private LocalDate effectiveDate;
+    private Instant effectiveDate;
 
     @Column(name = "expiry_dt", nullable = false)
-    private LocalDate expiryDate;
+    private Instant expiryDate;
 
     @Column(name = "maturity_dt", nullable = false)
-    private LocalDate maturityDate;
+    private Instant maturityDate;
 
     @Column(name = "currency", nullable = false, length = 3)
     private String currency;
@@ -141,15 +141,4 @@ public class Agreement {
         party.setAgreement(null);
     }
 
-    public boolean isActive() {
-        return AgreementStatus.OUVERT.equals(statusCode) && !deletedIndicator;
-    }
-
-    public boolean isExpired() {
-        return expiryDate.isBefore(LocalDate.now());
-    }
-
-    public boolean isMature() {
-        return maturityDate.isBefore(LocalDate.now());
-    }
 }

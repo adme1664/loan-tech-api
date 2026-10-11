@@ -22,7 +22,6 @@ public interface InterestRateMapper {
      * @return the InterestRateDTO
      */
     @Mapping(target = "agreementId", source = "agreement.agreementId")
-    @Mapping(target = "effectiveRate", expression = "java(interestRate.calculateEffectiveRate())")
     InterestRateDTO toDto(InterestRate interestRate);
 
     /**

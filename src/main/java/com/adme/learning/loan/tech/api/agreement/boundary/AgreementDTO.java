@@ -1,8 +1,7 @@
 package com.adme.learning.loan.tech.api.agreement.boundary;
 
-import com.adme.learning.loan.tech.api.agreement.entity.AgreementStatus;
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.Instant;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,12 +21,12 @@ public class AgreementDTO {
     private String agreementType;
     private String productCode;
     private String statusCodeSource;
-    private AgreementStatus statusCode;
+    private String statusCode;
     private Boolean unbankLetterIssuerIndicator;
     private BigDecimal originalAmount;
-    private LocalDate effectiveDate;
-    private LocalDate expiryDate;
-    private LocalDate maturityDate;
+    private String effectiveDate;
+    private String expiryDate;
+    private String maturityDate;
     private String currency;
     private String sourceSystem;
     private Boolean deletedIndicator;
