@@ -28,7 +28,6 @@ public interface AgreementRelationMapper {
      * @param dto the AgreementRelationDTO
      * @return the AgreementRelation entity
      */
-    @Mapping(target = "creditFacilityId", ignore = true)
     @Mapping(target = "creditFacility", ignore = true)
     @Mapping(target = "systemInsertTimestamp", ignore = true)
     @Mapping(target = "systemUpdateTimestamp", ignore = true)

@@ -10,11 +10,8 @@ import java.util.UUID;
  * Repository for AgreementRelation entities.
  */
 @Repository
-public interface AgreementRelationRepository extends JpaRepository<AgreementRelation, AgreementRelation.AgreementRelationId> {
-
-    List<AgreementRelation> findByCreditFacilityId(UUID creditFacilityId);
+public interface AgreementRelationRepository extends JpaRepository<AgreementRelation, UUID> {
 
     List<AgreementRelation> findByAgreementId(String agreementId);
 
-    void deleteByCreditFacilityId(UUID creditFacilityId);
 }

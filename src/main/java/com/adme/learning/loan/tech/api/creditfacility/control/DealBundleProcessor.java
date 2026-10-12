@@ -99,17 +99,18 @@ public class DealBundleProcessor {
 
     creditFacilityDTOS.forEach(creditFacilityDTO -> {
       CreditFacility creditFacility = creditFacilityMapper.toEntity(creditFacilityDTO);
+      creditFacility.setBorrowingAgreementId(deal.getBorrowingAgreementId());
       creditFacility.setSystemInsertProcess(APP_NAME);
       creditFacility.setDeal(deal);
-      creditFacilities.add(creditFacility);
 
       //set agreements
       creditFacilityDTO.getAgreementRelations().forEach(agreementRelationDTO -> {
         AgreementRelation agreementRelation = agreementRelationMapper.toEntity(
             agreementRelationDTO);
-        agreementRelation.setCreditFacility(creditFacility);
         agreementRelation.setSystemInsertProcess(APP_NAME);
         creditFacility.addAgreementRelation(agreementRelation);
+
+        creditFacilities.add(creditFacility);
       });
     });
     return creditFacilities;
@@ -171,6 +172,7 @@ public class DealBundleProcessor {
       } else {
         CreditFacility newCreditFacility = creditFacilityMapper.toEntity(creditFacilityDto);
         newCreditFacility.setSystemInsertProcess(APP_NAME);
+        newCreditFacility.setDeal(deal);
         deal.addCreditFacility(newCreditFacility);
 
         // Add agreement relations
@@ -226,6 +228,7 @@ public class DealBundleProcessor {
       existingParty.setSystemUpdateProcess(APP_NAME);
     } else {
       CfParty newParty = cfPartyMapper.toEntity(partyDto);
+      newParty.setDeal(deal);
       newParty.setSystemInsertProcess(APP_NAME);
       deal.setParty(newParty);
     }

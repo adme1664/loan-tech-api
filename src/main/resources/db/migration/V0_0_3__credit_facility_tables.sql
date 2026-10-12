@@ -1,4 +1,6 @@
 -- Table des deals (source : fichiers UNBNK_DEAL_*.json)
+SET search_path TO commercialloan;
+
 CREATE TABLE IF NOT EXISTS tbl_deal
 (
     deal_id             uuid         NOT NULL,
@@ -74,6 +76,7 @@ CREATE TABLE IF NOT EXISTS tbl_cf_party
 -- Prérequis : tbl_credit_facility
 CREATE TABLE IF NOT EXISTS tblr_agreement_relation
 (
+    agreement_relation_id uuid NOT NULL,
     credit_facility_id uuid         NOT NULL,
     agmt_id            VARCHAR(20)  NOT NULL,
 
@@ -83,7 +86,7 @@ CREATE TABLE IF NOT EXISTS tblr_agreement_relation
     sys_ins_process    VARCHAR(100) NOT NULL,
     sys_upd_process    VARCHAR(100) NULL,
 
-    CONSTRAINT pk_tblr_agreement_relation PRIMARY KEY (credit_facility_id, agmt_id),
+    CONSTRAINT pk_tblr_agreement_relation PRIMARY KEY (agreement_relation_id),
     CONSTRAINT fk_tblr_agreement_relation_credit_facility FOREIGN KEY (credit_facility_id)
         REFERENCES tbl_credit_facility (credit_facility_id)
 );

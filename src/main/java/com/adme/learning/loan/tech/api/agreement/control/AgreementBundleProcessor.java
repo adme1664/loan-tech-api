@@ -91,7 +91,7 @@ public class AgreementBundleProcessor {
         if (dto.getPaymentSchedules()!=null && !dto.getPaymentSchedules().isEmpty()) {
             for (PaymentScheduleDTO paymentScheduleDto : dto.getPaymentSchedules()) {
                 PaymentSchedule paymentSchedule = paymentScheduleMapper.toEntity(paymentScheduleDto);
-                paymentSchedule.setSystemInsertProcess("AgreementBundleService.prepareForCreate");
+                paymentSchedule.setSystemInsertProcess(APP_NAME);
                 agreement.addPaymentSchedule(paymentSchedule);
             }
         }

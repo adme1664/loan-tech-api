@@ -14,6 +14,7 @@
 -- ---------------------------------------------------------------------
 
 create schema if not exists commercialloan;
+SET search_path TO commercialloan;
 
 CREATE TABLE tbl_agreement
 (
