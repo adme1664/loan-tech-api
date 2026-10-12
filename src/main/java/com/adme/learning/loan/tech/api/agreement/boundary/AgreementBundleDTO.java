@@ -16,6 +16,7 @@ public class AgreementBundleDTO {
   private AgreementDTO agreement;
   private List<InterestRateDTO> interestRates;
   private List<BalanceDTO> balances;
+  private List<PaymentScheduleDTO> paymentSchedules;
   private PartyDTO party;
 
 }

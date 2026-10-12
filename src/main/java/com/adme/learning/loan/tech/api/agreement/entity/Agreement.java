@@ -98,6 +98,10 @@ public class Agreement {
     @Builder.Default
     private List<Party> parties = new ArrayList<>();
 
+    @OneToMany(mappedBy = "agreement", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @Builder.Default
+    private List<PaymentSchedule> paymentSchedules = new ArrayList<>();
+
     @PrePersist
     protected void onCreate() {
         systemInsertTimestamp = ZonedDateTime.now();
@@ -124,6 +128,11 @@ public class Agreement {
     public void addBalance(Balance balance) {
         balances.add(balance);
         balance.setAgreement(this);
+    }
+
+    public void addPaymentSchedule(PaymentSchedule paymentSchedule) {
+        paymentSchedules.add(paymentSchedule);
+        paymentSchedule.setAgreement(this);
     }
 
     public void removeBalance(Balance balance) {

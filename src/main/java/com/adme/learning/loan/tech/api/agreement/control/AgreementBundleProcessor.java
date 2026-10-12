@@ -3,12 +3,14 @@ package com.adme.learning.loan.tech.api.agreement.control;
 import com.adme.learning.loan.tech.api.agreement.boundary.AgreementBundleDTO;
 import com.adme.learning.loan.tech.api.agreement.boundary.BalanceDTO;
 import com.adme.learning.loan.tech.api.agreement.boundary.InterestRateDTO;
+import com.adme.learning.loan.tech.api.agreement.boundary.PaymentScheduleDTO;
 import com.adme.learning.loan.tech.api.agreement.entity.Agreement;
 import com.adme.learning.loan.tech.api.agreement.entity.AgreementRepository;
 import com.adme.learning.loan.tech.api.agreement.entity.Balance;
 import com.adme.learning.loan.tech.api.agreement.entity.BalanceRepository;
 import com.adme.learning.loan.tech.api.agreement.entity.InterestRate;
 import com.adme.learning.loan.tech.api.agreement.entity.Party;
+import com.adme.learning.loan.tech.api.agreement.entity.PaymentSchedule;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -32,7 +34,9 @@ public class AgreementBundleProcessor {
     private final BalanceMapper balanceMapper;
     private final InterestRateMapper interestRateMapper;
     private final PartyMapper partyMapper;
+    private final PaymentScheduleMapper paymentScheduleMapper;
     private final BalanceRepository balanceRepository;
+    private final static String APP_NAME = "UNBNK_LOAN_IQ";
 
     public AgreementBundleProcessor(
             AgreementRepository agreementRepository,
@@ -40,13 +44,16 @@ public class AgreementBundleProcessor {
             BalanceMapper balanceMapper,
             InterestRateMapper interestRateMapper,
             PartyMapper partyMapper,
+            PaymentScheduleMapper paymentScheduleMapper,
+        PaymentScheduleMapper paymentScheduleMapper1,
             BalanceRepository balanceRepository) {
         this.agreementRepository = agreementRepository;
         this.agreementMapper = agreementMapper;
         this.balanceMapper = balanceMapper;
         this.interestRateMapper = interestRateMapper;
         this.partyMapper = partyMapper;
-        this.balanceRepository = balanceRepository;
+      this.paymentScheduleMapper = paymentScheduleMapper1;
+      this.balanceRepository = balanceRepository;
     }
 
     /**
@@ -57,18 +64,18 @@ public class AgreementBundleProcessor {
     @Transactional
     public void prepareForCreate(AgreementBundleDTO dto) {
         Agreement agreement = agreementMapper.toEntity(dto.getAgreement());
-        agreement.setSystemInsertProcess("AgreementBundleService.prepareForCreate");
+        agreement.setSystemInsertProcess(APP_NAME);
 
         if (dto.getParty() != null) {
             Party party = partyMapper.toEntity(dto.getParty());
-            party.setSystemInsertProcess("AgreementBundleService.prepareForCreate");
+            party.setSystemInsertProcess(APP_NAME);
             agreement.addParty(party);
         }
 
         if (dto.getBalances() != null && !dto.getBalances().isEmpty()) {
             for (BalanceDTO balanceDto : dto.getBalances()) {
                 Balance balance = balanceMapper.toEntity(balanceDto);
-                balance.setSystemInsertProcess("AgreementBundleService.prepareForCreate");
+                balance.setSystemInsertProcess(APP_NAME);
                 agreement.addBalance(balance);
             }
         }
@@ -76,8 +83,16 @@ public class AgreementBundleProcessor {
         if (dto.getInterestRates() != null && !dto.getInterestRates().isEmpty()) {
             for (InterestRateDTO interestRateDto : dto.getInterestRates()) {
                 InterestRate interestRate = interestRateMapper.toEntity(interestRateDto);
-                interestRate.setSystemInsertProcess("AgreementBundleService.prepareForCreate");
+                interestRate.setSystemInsertProcess(APP_NAME);
                 agreement.addInterestRate(interestRate);
+            }
+        }
+        
+        if (dto.getPaymentSchedules()!=null && !dto.getPaymentSchedules().isEmpty()) {
+            for (PaymentScheduleDTO paymentScheduleDto : dto.getPaymentSchedules()) {
+                PaymentSchedule paymentSchedule = paymentScheduleMapper.toEntity(paymentScheduleDto);
+                paymentSchedule.setSystemInsertProcess("AgreementBundleService.prepareForCreate");
+                agreement.addPaymentSchedule(paymentSchedule);
             }
         }
 
@@ -105,10 +120,11 @@ public class AgreementBundleProcessor {
 
         Agreement agreement = existingAgreementOpt.get();
         agreementMapper.updateEntityFromDto(dto.getAgreement(), agreement);
-        agreement.setSystemUpdateProcess("AgreementBundleService.prepareForUpdate");
+        agreement.setSystemUpdateProcess(APP_NAME);
 
         mergeBalances(agreement, dto.getBalances());
         mergeInterestRates(agreement, dto.getInterestRates());
+        mergePaymentSchedules(agreement, dto.getPaymentSchedules());
 
         agreementRepository.save(agreement);
     }
@@ -132,16 +148,16 @@ public class AgreementBundleProcessor {
                     .findByAgreementAgreementIdAndBalanceTypeAndBalanceDate(
                             agreement.getAgreementId(),
                             balanceDto.getBalanceType(),
-                            CommonUtils.convertStringToInstant(balanceDto.getBalanceDate())
+                            CommonMapper.convertInstantToString(balanceDto.getBalanceDate())
                     );
 
             if (existingBalanceOpt.isPresent()) {
                 Balance existingBalance = existingBalanceOpt.get();
                 balanceMapper.updateEntityFromDto(balanceDto, existingBalance);
-                existingBalance.setSystemUpdateProcess("AgreementBundleService.prepareForUpdate");
+                existingBalance.setSystemUpdateProcess(APP_NAME);
             } else {
                 Balance newBalance = balanceMapper.toEntity(balanceDto);
-                newBalance.setSystemInsertProcess("AgreementBundleService.prepareForUpdate");
+                newBalance.setSystemInsertProcess(APP_NAME);
                 agreement.addBalance(newBalance);
             }
         }
@@ -163,18 +179,31 @@ public class AgreementBundleProcessor {
 
         for (InterestRateDTO interestRateDto : interestRateDtos) {
             Optional<InterestRate> existingRateOpt = agreement.getInterestRates().stream()
-                    .filter(rate -> rate.getEffectiveDate().equals(interestRateDto.getEffectiveDate()))
+                    .filter(rate -> rate.getEffectiveDate().equals(CommonMapper.convertInstantToString(interestRateDto.getEffectiveDate())))
                     .findFirst();
 
             if (existingRateOpt.isPresent()) {
                 InterestRate existingRate = existingRateOpt.get();
                 interestRateMapper.updateEntityFromDto(interestRateDto, existingRate);
-                existingRate.setSystemUpdateProcess("AgreementBundleService.prepareForUpdate");
+                existingRate.setSystemUpdateProcess(APP_NAME);
             } else {
                 InterestRate newRate = interestRateMapper.toEntity(interestRateDto);
-                newRate.setSystemInsertProcess("AgreementBundleService.prepareForUpdate");
+                newRate.setSystemInsertProcess(APP_NAME);
                 agreement.addInterestRate(newRate);
             }
+        }
+    }
+
+    private void mergePaymentSchedules(Agreement agreement, List<PaymentScheduleDTO> paymentScheduleDtos) {
+        if (paymentScheduleDtos == null) {
+            paymentScheduleDtos = new ArrayList<>();
+        }
+
+        agreement.getPaymentSchedules().clear();
+        for (PaymentScheduleDTO paymentScheduleDto : paymentScheduleDtos) {
+            PaymentSchedule paymentSchedule = paymentScheduleMapper.toEntity(paymentScheduleDto);
+            paymentSchedule.setSystemInsertProcess(APP_NAME);
+            agreement.addPaymentSchedule(paymentSchedule);
         }
     }
 

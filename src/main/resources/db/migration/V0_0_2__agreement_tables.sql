@@ -115,4 +115,24 @@ CREATE TABLE tbl_party
     CONSTRAINT uk_party UNIQUE (agreement_id, member_id_no)
 );
 
+
+
+-- ---------------------------------------------------------------------
+-- tbl_payment_schedule : objet paymentSchedule
+-- ---------------------------------------------------------------------
+CREATE TABLE tbl_payment_schedule
+(
+    payment_schedule_id UUID           NOT NULL,
+    agreement_id        UUID           NOT NULL,
+    payment_date        DATE           NOT NULL,
+    payment_amnt        NUMERIC(18, 2) NOT NULL DEFAULT 0,
+    schedule_date       DATE           NOT NULL,
+    -- audit
+    sys_ins_ts          TIMESTAMPTZ    NOT NULL DEFAULT now(),
+    sys_upd_ts          TIMESTAMPTZ    NULL,
+    sys_ins_process     VARCHAR(100)   NOT NULL,
+    sys_upd_process     VARCHAR(100)   NULL,
+    CONSTRAINT pk_party PRIMARY KEY (payment_schedule_id),
+    CONSTRAINT fk_party_agreement FOREIGN KEY (agreement_id) REFERENCES tbl_agreement (agreement_id)
+);
 CREATE INDEX ix_party_sys_upd_ts ON tbl_party (sys_upd_ts);
