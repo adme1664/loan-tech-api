@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS tbl_deal
     effctv_dt           DATE,
     classification_cd   VARCHAR(10),
     next_review_dt      DATE,
+    deleteIndicator     boolean               default false,
 
     -- Champs d'audit
     sys_ins_ts          TIMESTAMPTZ  NOT NULL DEFAULT now(),

@@ -23,7 +23,7 @@ import org.springframework.web.server.ResponseStatusException;
 @RequestMapping("/api/v1/credit-facilities")
 @RequiredArgsConstructor
 @Slf4j
-public class CreditFacilityResource implements MessageResource {
+public class DealBundleResource implements MessageResource {
 
     private final DealBundleProcessor dealBundleProcessor;
 
@@ -78,9 +78,9 @@ public class CreditFacilityResource implements MessageResource {
      * @throws ResponseStatusException with HTTP 404 if credit facility not found
      */
     @DeleteMapping(path = "/bundle", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<Void> purgeCreditFacilityBundle(@RequestBody DealBundleDTO dto) {
+    public ResponseEntity<Void> purgeDeal(@RequestBody DealBundleDTO dto) {
         try {
-            boolean wasPurged = dealBundleProcessor.purgeCreditFacility(dto);
+            boolean wasPurged = dealBundleProcessor.purgeDeal(dto.getDealNo());
             if (wasPurged) {
                 log.info(DEAL_PURGED, dto.getDealNo());
                 return ResponseEntity.ok().build();

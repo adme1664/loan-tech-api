@@ -33,7 +33,7 @@ public interface CreditFacilityMapper {
     @Mapping(target = "systemUpdateTimestamp", ignore = true)
     @Mapping(target = "systemInsertProcess", ignore = true)
     @Mapping(target = "systemUpdateProcess", ignore = true)
-    @Mapping(target = "parties", ignore = true)
+
     @Mapping(target = "agreementRelations", ignore = true)
     CreditFacility toEntity(CreditFacilityDTO dto);
 
@@ -49,7 +49,6 @@ public interface CreditFacilityMapper {
     @Mapping(target = "systemUpdateTimestamp", ignore = true)
     @Mapping(target = "systemInsertProcess", ignore = true)
     @Mapping(target = "systemUpdateProcess", ignore = true)
-    @Mapping(target = "parties", ignore = true)
     @Mapping(target = "agreementRelations", ignore = true)
     void updateEntityFromDto(CreditFacilityDTO dto, @MappingTarget CreditFacility creditFacility);
 }

@@ -90,16 +90,6 @@ public class CreditFacility {
         systemUpdateTimestamp = Instant.now();
     }
 
-    public void addParty(CfParty party) {
-        parties.add(party);
-        party.setCreditFacility(this);
-    }
-
-    public void removeParty(CfParty party) {
-        parties.remove(party);
-        party.setCreditFacility(null);
-    }
-
     public void addAgreementRelation(AgreementRelation agreementRelation) {
         agreementRelations.add(agreementRelation);
         agreementRelation.setCreditFacility(this);

@@ -10,7 +10,7 @@ public interface MessageResource {
   static final String AGREEMENT_NOT_UPDATED = "Error while updating Agreement {}. Message: {}";
   static final String AGREEMENT_NOT_CREATED = "Error while creating Agreement {}. Message: {}";
 
-  static final String DEAL_FOUND = "Deal {} not found";
+  static final String DEAL_FOUND = "Deal {} not found. Message: {}";
   static final String DEAL_ALREADY_EXISTS = "Deal {} already exists";
   static final String DEAL_CREATED = "Deal {} created successfully";
   static final String DEAL_UPDATED = "Deal {} updated successfully";

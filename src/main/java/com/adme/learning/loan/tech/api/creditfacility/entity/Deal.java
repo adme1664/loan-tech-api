@@ -51,6 +51,9 @@ public class Deal {
     @Column(name = "sys_ins_process", nullable = false, length = 100)
     private String systemInsertProcess;
 
+    @Column(name = "delete_indicator")
+    private boolean deleteIndicator;
+
     @Column(name = "sys_upd_process", length = 100)
     private String systemUpdateProcess;
 

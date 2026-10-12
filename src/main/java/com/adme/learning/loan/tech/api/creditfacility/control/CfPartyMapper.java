@@ -30,7 +30,6 @@ public interface CfPartyMapper {
      * @return the CfParty entity
      */
     @Mapping(target = "cfPartyId", ignore = true)
-    @Mapping(target = "creditFacility", ignore = true)
     @Mapping(target = "systemInsertTimestamp", ignore = true)
     @Mapping(target = "systemUpdateTimestamp", ignore = true)
     @Mapping(target = "systemInsertProcess", ignore = true)
@@ -44,7 +43,6 @@ public interface CfPartyMapper {
      * @param party the existing CfParty entity to update
      */
     @Mapping(target = "cfPartyId", ignore = true)
-    @Mapping(target = "creditFacility", ignore = true)
     @Mapping(target = "systemInsertTimestamp", ignore = true)
     @Mapping(target = "systemUpdateTimestamp", ignore = true)
     @Mapping(target = "systemInsertProcess", ignore = true)

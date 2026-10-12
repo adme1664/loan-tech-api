@@ -13,8 +13,6 @@ import java.util.UUID;
 @Repository
 public interface CfPartyRepository extends JpaRepository<CfParty, UUID> {
 
-    List<CfParty> findByCreditFacility_CreditFacilityId(UUID creditFacilityId);
-
     Optional<CfParty> findByMemberIdNo(String memberIdNo);
 
     boolean existsByMemberIdNo(String memberIdNo);
