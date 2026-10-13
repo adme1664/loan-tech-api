@@ -10,6 +10,8 @@ import com.adme.learning.loan.tech.api.creditfacility.entity.CreditFacility;
 import com.adme.learning.loan.tech.api.creditfacility.entity.CreditFacilityRepository;
 import com.adme.learning.loan.tech.api.creditfacility.entity.Deal;
 import com.adme.learning.loan.tech.api.creditfacility.entity.DealRepository;
+import io.micrometer.tracing.annotation.NewSpan;
+import io.micrometer.tracing.annotation.SpanTag;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -58,8 +60,9 @@ public class DealBundleProcessor {
    *
    * @param dto the CreditFacilityBundleDTO containing credit facility and related data
    */
+  @NewSpan("deal.create")
   @Transactional
-  public void prepareForCreate(DealBundleDTO dto) {
+  public void prepareForCreate(@SpanTag("dealNo") DealBundleDTO dto) {
     // Create or find Deal
     Deal deal;
     Optional<Deal> existingDeal = dealRepository.findByBorrowingAgreementId(
@@ -122,8 +125,9 @@ public class DealBundleProcessor {
    * @param dto the DealBundleDTO containing updated deal and related data
    * @throws ResponseStatusException with HTTP 422 if deal is not found
    */
+  @NewSpan("deal.update")
   @Transactional
-  public void prepareForUpdate(DealBundleDTO dto) {
+  public void prepareForUpdate(@SpanTag("dealNo") DealBundleDTO dto) {
     Optional<Deal> existingDealOpt = dealRepository.findByBorrowingAgreementId(
         dto.getDeal().getBorrowingAgreementId()
     );
@@ -153,6 +157,7 @@ public class DealBundleProcessor {
    * @param deal               the existing Deal entity
    * @param creditFacilityDtos the list of CreditFacilityDTOs from the request
    */
+  @NewSpan("deal.merge-credit-facilities")
   private void mergeCreditFacilities(Deal deal, List<CreditFacilityDTO> creditFacilityDtos) {
     if (creditFacilityDtos == null) {
       creditFacilityDtos = new ArrayList<>();
@@ -195,6 +200,7 @@ public class DealBundleProcessor {
    * @param creditFacility        the existing CreditFacility entity
    * @param agreementRelationDtos the list of AgreementRelationDTOs from the request
    */
+  @NewSpan("deal.merge-agreement-relations")
   private void mergeAgreementRelations(CreditFacility creditFacility,
       List<AgreementRelationDTO> agreementRelationDtos) {
     if (agreementRelationDtos == null) {
@@ -215,6 +221,7 @@ public class DealBundleProcessor {
    * @param deal      the existing Deal entity
    * @param partyDtos the list of CfPartyDTOs from the request
    */
+  @NewSpan("deal.merge-party")
   private void mergeParty(Deal deal, List<CfPartyDTO> partyDtos) {
     if (partyDtos == null || partyDtos.isEmpty()) {
       return;
@@ -234,7 +241,8 @@ public class DealBundleProcessor {
     }
   }
 
-  public boolean purgeDeal(String dealNo) {
+  @NewSpan("deal.purge")
+  public boolean purgeDeal(@SpanTag("dealNo") String dealNo) {
     var dealToPurge = dealRepository.findByBorrowingAgreementId(dealNo);
     if (dealToPurge.isEmpty()) {
       return false;

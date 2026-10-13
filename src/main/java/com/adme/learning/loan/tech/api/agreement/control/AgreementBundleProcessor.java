@@ -11,6 +11,9 @@ import com.adme.learning.loan.tech.api.agreement.entity.BalanceRepository;
 import com.adme.learning.loan.tech.api.agreement.entity.InterestRate;
 import com.adme.learning.loan.tech.api.agreement.entity.Party;
 import com.adme.learning.loan.tech.api.agreement.entity.PaymentSchedule;
+import com.adme.learning.loan.tech.api.commons.BalanceMapper;
+import io.micrometer.tracing.annotation.NewSpan;
+import io.micrometer.tracing.annotation.SpanTag;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -61,8 +64,9 @@ public class AgreementBundleProcessor {
      *
      * @param dto the AgreementBundleDTO containing agreement and related data
      */
+    @NewSpan("agreement.create")
     @Transactional
-    public void prepareForCreate(AgreementBundleDTO dto) {
+    public void prepareForCreate(@SpanTag("agreementNo") AgreementBundleDTO dto) {
         Agreement agreement = agreementMapper.toEntity(dto.getAgreement());
         agreement.setSystemInsertProcess(APP_NAME);
 
@@ -105,8 +109,9 @@ public class AgreementBundleProcessor {
      * @param dto the AgreementBundleDTO containing updated agreement and related data
      * @throws ResponseStatusException with HTTP 422 if agreement is not found
      */
+    @NewSpan("agreement.update")
     @Transactional
-    public void prepareForUpdate(AgreementBundleDTO dto) {
+    public void prepareForUpdate(@SpanTag("agreementNo") AgreementBundleDTO dto) {
         Optional<Agreement> existingAgreementOpt = agreementRepository.findByAgreementNo(
                 dto.getAgreement().getAgreementNo()
         );
@@ -138,6 +143,7 @@ public class AgreementBundleProcessor {
      * @param agreement the existing Agreement entity
      * @param balanceDtos the list of BalanceDTOs from the request
      */
+    @NewSpan("agreement.merge-balances")
     private void mergeBalances(Agreement agreement, List<BalanceDTO> balanceDtos) {
         if (balanceDtos == null) {
             balanceDtos = new ArrayList<>();
@@ -172,6 +178,7 @@ public class AgreementBundleProcessor {
      * @param agreement the existing Agreement entity
      * @param interestRateDtos the list of InterestRateDTOs from the request
      */
+    @NewSpan("agreement.merge-interest-rates")
     private void mergeInterestRates(Agreement agreement, List<InterestRateDTO> interestRateDtos) {
         if (interestRateDtos == null) {
             interestRateDtos = new ArrayList<>();
@@ -194,6 +201,7 @@ public class AgreementBundleProcessor {
         }
     }
 
+    @NewSpan("agreement.merge-payment-schedules")
     private void mergePaymentSchedules(Agreement agreement, List<PaymentScheduleDTO> paymentScheduleDtos) {
         if (paymentScheduleDtos == null) {
             paymentScheduleDtos = new ArrayList<>();
@@ -214,8 +222,9 @@ public class AgreementBundleProcessor {
      * @return true if agreement was newly purged, false if already purged
      * @throws ResponseStatusException with HTTP 404 if agreement not found
      */
+    @NewSpan("agreement.purge")
     @Transactional
-    public boolean purgeAgreement(AgreementBundleDTO dto) {
+    public boolean purgeAgreement(@SpanTag("agreementNo") AgreementBundleDTO dto) {
         Optional<Agreement> existingAgreementOpt = agreementRepository.findByAgreementNo(
                 dto.getAgreement().getAgreementNo()
         );

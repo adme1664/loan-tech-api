@@ -5,6 +5,7 @@ import com.adme.learning.loan.tech.api.agreement.boundary.AgreementDTO;
 import com.adme.learning.loan.tech.api.agreement.boundary.PartyDTO;
 import com.adme.learning.loan.tech.api.agreement.entity.Agreement;
 import com.adme.learning.loan.tech.api.agreement.entity.Party;
+import com.adme.learning.loan.tech.api.commons.BalanceMapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;

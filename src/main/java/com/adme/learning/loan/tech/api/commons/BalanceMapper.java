@@ -1,4 +1,4 @@
-package com.adme.learning.loan.tech.api.agreement.control;
+package com.adme.learning.loan.tech.api.commons;
 
 import com.adme.learning.loan.tech.api.agreement.boundary.BalanceDTO;
 import com.adme.learning.loan.tech.api.agreement.entity.Balance;

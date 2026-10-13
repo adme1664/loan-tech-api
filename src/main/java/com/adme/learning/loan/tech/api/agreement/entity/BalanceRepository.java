@@ -46,6 +46,8 @@ public interface BalanceRepository extends JpaRepository<Balance, UUID> {
             @Param("endDate") LocalDate endDate
     );
 
+    Optional<Balance> findByAgreementAndBalanceType(Agreement agreement, String balanceType);
+
     Optional<Balance> findFirstByAgreementAgreementIdAndBalanceTypeOrderByBalanceDateDesc(
             UUID agreementId,
             String balanceType
