@@ -1,0 +1,25 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# IDE
+.idea
+*.iml
+.vscode
+.DS_Store
+
+# Maven
+target
+!.mvn/wrapper/maven-wrapper.jar
+
+# Documentation
+README.md
+HELP.md
+CLAUDE.md
+
+# Environment files
+.env
+
+# Logs
+*.log
